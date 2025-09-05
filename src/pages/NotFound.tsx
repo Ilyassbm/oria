@@ -1,5 +1,8 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Home, ArrowLeft } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,14 +15,35 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <Card className="oria-card-elevated max-w-md w-full text-center">
+        <CardHeader>
+          <div className="mx-auto mb-4 text-6xl font-bold text-primary">404</div>
+          <CardTitle className="text-2xl">Page introuvable</CardTitle>
+          <CardDescription>
+            La page que vous recherchez n'existe pas ou a été déplacée.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button asChild className="flex-1">
+              <Link to="/">
+                <Home className="h-4 w-4 mr-2" />
+                Accueil
+              </Link>
+            </Button>
+            <Button variant="secondary" asChild className="flex-1">
+              <Link to="/subscriptions">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Abonnements
+              </Link>
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Route demandée : {location.pathname}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };
