@@ -90,17 +90,58 @@ All colors MUST be HSL. Clean, minimal, professional.
   }
 
   .dark {
-    /* Dark mode - Keep minimal for now */
+    /* Dark mode - Improved contrast */
     --background: 240 6% 5%;
     --foreground: 240 6% 90%;
+    
     --card: 240 6% 8%;
     --card-foreground: 240 6% 90%;
+    --card-elevated: 240 6% 10%;
+    
+    --popover: 240 6% 8%;
+    --popover-foreground: 240 6% 90%;
+    
     --primary: 260 75% 65%;
     --primary-foreground: 240 6% 5%;
-    --border: 240 6% 15%;
-    --input: 240 6% 15%;
+    --primary-hover: 260 75% 70%;
+    --primary-light: 260 60% 15%;
+    
+    --secondary: 240 6% 12%;
+    --secondary-foreground: 240 6% 90%;
+    --secondary-hover: 240 6% 16%;
+    
     --muted: 240 6% 10%;
     --muted-foreground: 240 4% 60%;
+    
+    --accent: 240 6% 12%;
+    --accent-foreground: 240 6% 90%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 60% 15%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 38 80% 15%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-light: 0 70% 15%;
+    
+    --border: 240 6% 15%;
+    --border-light: 240 6% 18%;
+    --input: 240 6% 15%;
+    --ring: 260 75% 65%;
+    
+    /* Sidebar dark mode */
+    --sidebar-background: 240 6% 8%;
+    --sidebar-foreground: 240 6% 90%;
+    --sidebar-primary: 260 75% 65%;
+    --sidebar-primary-foreground: 240 6% 5%;
+    --sidebar-accent: 240 6% 12%;
+    --sidebar-accent-foreground: 240 6% 90%;
+    --sidebar-border: 240 6% 15%;
+    --sidebar-ring: 260 75% 65%;
   }
 }
 
