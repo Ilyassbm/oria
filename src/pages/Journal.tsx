@@ -1,203 +1,138 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useState, useMemo } from "react";
+import { useValueJournal } from "@/hooks/useValueJournal";
+import { AddJournalEntryDialog } from "@/components/journal/AddJournalEntryDialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Calendar, Clock, Target } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, Calendar, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
-const Journal = () => {
-  const { toast } = useToast();
-  
-  const [formData, setFormData] = useState({
-    client: "",
-    action: "",
-    timeSpent: "",
-    impact: ""
-  });
+export default function Journal() {
+  const { entries, isLoading } = useValueJournal();
+  const [search, setSearch] = useState("");
 
-  // Mock clients data
-  const clients = ["TechCorp", "DesignStudio", "StartupXYZ"];
+  const filteredEntries = useMemo(() => {
+    return entries.filter((entry) => {
+      const matchesSearch =
+        entry.title.toLowerCase().includes(search.toLowerCase()) ||
+        entry.description.toLowerCase().includes(search.toLowerCase()) ||
+        (entry.clients?.name &&
+          entry.clients.name.toLowerCase().includes(search.toLowerCase()));
 
-  // Mock journal entries
-  const journalEntries = [
-    {
-      id: 1,
-      date: "2024-01-25",
-      client: "TechCorp",
-      action: "Optimisation SEO des pages produits",
-      timeSpent: "3h",
-      impact: "Amélioration du ranking Google pour 5 mots-clés principaux"
-    },
-    {
-      id: 2,
-      date: "2024-01-24",
-      client: "DesignStudio",
-      action: "Création de contenu pour les réseaux sociaux",
-      timeSpent: "2h",
-      impact: "Publication de 5 posts, +15% d'engagement moyen"
-    },
-    {
-      id: 3,
-      date: "2024-01-24",
-      client: "StartupXYZ",
-      action: "Analyse des performances AdWords",
-      timeSpent: "1.5h",
-      impact: "Réduction du CPC de 20%, optimisation de 3 campagnes"
+      return matchesSearch;
+    });
+  }, [entries, search]);
+
+  const getValueTypeBadge = (type?: string) => {
+    if (!type) return null;
+
+    switch (type) {
+      case "time_saved":
+        return (
+          <Badge className="bg-primary-light text-primary">Temps économisé</Badge>
+        );
+      case "revenue_generated":
+        return <Badge className="bg-success-light text-success">Revenu généré</Badge>;
+      case "cost_reduced":
+        return <Badge className="bg-warning-light text-warning">Coût réduit</Badge>;
+      case "other":
+        return <Badge variant="secondary">Autre</Badge>;
+      default:
+        return null;
     }
-  ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.client || !formData.action || !formData.timeSpent) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs obligatoires",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Entrée ajoutée !",
-      description: `Nouvelle activité enregistrée pour ${formData.client}.`,
-    });
-
-    // Reset form
-    setFormData({
-      client: "",
-      action: "",
-      timeSpent: "",
-      impact: ""
-    });
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="oria-section max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Journal de Valeur</h1>
-        <p className="text-muted-foreground">Documentez vos actions quotidiennes pour chaque client</p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Journal de valeur</h1>
+          <p className="text-muted-foreground mt-2">
+            Enregistrez et suivez chaque intervention client
+          </p>
+        </div>
+        <AddJournalEntryDialog />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Add New Entry */}
-        <Card className="oria-card-elevated">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Nouvelle entrée</CardTitle>
-            <CardDescription>Qu'avez-vous fait aujourd'hui pour vos clients ?</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="client">Client *</Label>
-                <Select value={formData.client} onValueChange={(value) => setFormData(prev => ({ ...prev, client: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client} value={client}>
-                        {client}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Rechercher par titre, description ou client..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10"
+        />
+      </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="action">Action réalisée *</Label>
-                <Textarea
-                  id="action"
-                  name="action"
-                  value={formData.action}
-                  onChange={handleInputChange}
-                  placeholder="Décrivez l'action réalisée aujourd'hui..."
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="timeSpent">Temps passé *</Label>
-                <Input
-                  id="timeSpent"
-                  name="timeSpent"
-                  value={formData.timeSpent}
-                  onChange={handleInputChange}
-                  placeholder="Ex: 2h, 30min, 1.5h..."
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="impact">Impact / Résultat</Label>
-                <Textarea
-                  id="impact"
-                  name="impact"
-                  value={formData.impact}
-                  onChange={handleInputChange}
-                  placeholder="Quel a été l'impact de cette action ?"
-                  rows={2}
-                />
-              </div>
-
-              <Button type="submit" className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Ajouter l'entrée
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Recent Entries */}
-        <Card className="oria-card">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Entrées récentes</CardTitle>
-            <CardDescription>Vos dernières activités documentées</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {journalEntries.map((entry) => (
-                <div key={entry.id} className="border-l-2 border-primary pl-4 pb-4 last:pb-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-foreground">{entry.client}</h4>
-                    <div className="flex items-center text-xs text-muted-foreground gap-3">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {entry.date}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {entry.timeSpent}
-                      </span>
-                    </div>
+      <div className="space-y-4">
+        {filteredEntries.map((entry) => (
+          <Card
+            key={entry.id}
+            className="hover-scale transition-all border-border/50 hover:shadow-md"
+          >
+            <CardContent className="pt-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-semibold text-lg">{entry.title}</h3>
+                    {entry.value_type && getValueTypeBadge(entry.value_type)}
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">{entry.action}</p>
-                  {entry.impact && (
-                    <p className="text-xs text-success flex items-start gap-1">
-                      <Target className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                      {entry.impact}
+                  {entry.clients && (
+                    <p className="text-sm text-muted-foreground">
+                      {entry.clients.name}
+                      {entry.subscriptions && ` • ${entry.subscriptions.name}`}
                     </p>
                   )}
                 </div>
-              ))}
-            </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
+                    <Calendar className="h-3 w-3" />
+                    {format(new Date(entry.intervention_date), "dd MMM yyyy", {
+                      locale: fr,
+                    })}
+                  </div>
+                  {entry.value_amount && entry.value_amount > 0 && (
+                    <div className="flex items-center gap-1 text-success font-semibold">
+                      <TrendingUp className="h-4 w-4" />
+                      {entry.value_amount.toFixed(2)} €
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {entry.description}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {filteredEntries.length === 0 && (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <p className="text-muted-foreground text-center">
+              {search
+                ? "Aucune entrée ne correspond à vos critères"
+                : "Aucune entrée dans le journal pour le moment"}
+            </p>
+            {!search && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Cliquez sur "Nouvelle entrée" pour commencer
+              </p>
+            )}
           </CardContent>
         </Card>
-      </div>
+      )}
     </div>
   );
-};
-
-export default Journal;
+}
