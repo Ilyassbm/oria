@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BarChart3, Users, Plus, Calendar, Settings, Home } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
-import oriaLogo from "@/assets/oria-logo.png";
+import oriaLogoWhite from "@/assets/oria-logo-white.png";
 
 import {
   Sidebar,
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Tableau de bord", url: "/", icon: Home },
   { title: "Abonnements", url: "/subscriptions", icon: BarChart3 },
   { title: "Clients", url: "/clients", icon: Users },
   { title: "Journal", url: "/journal", icon: Calendar },
@@ -39,11 +39,11 @@ export function AppSidebar() {
     <Sidebar className="border-r border-border bg-sidebar">
       <SidebarContent className="p-4">
         <div className="mb-8 flex items-center gap-3">
-          <img src={oriaLogo} alt="Oria" className="h-8 w-8" />
-          <div>
-            <h1 className="text-2xl font-bold text-primary">Oria</h1>
-            <p className="text-sm text-muted-foreground">Agence SaaS Platform</p>
-          </div>
+          <img 
+            src={oriaLogoWhite} 
+            alt="Oria" 
+            className="h-12 w-auto object-contain brightness-0 dark:brightness-100 invert dark:invert-0 transition-all"
+          />
         </div>
 
         <SidebarGroup>
